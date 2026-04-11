@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: hello
+ namespace: my-app
+data:
+ index.html: |
+  <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>DevOps Lab2</title>
+    </head>
+    <body>
+      <h1 style="color: blue; text-align: center;">Здравствуйте, Татьяна Алексеевна!</h1>
+      <p>Всё работает!</p>
+    </body>
+    </html>

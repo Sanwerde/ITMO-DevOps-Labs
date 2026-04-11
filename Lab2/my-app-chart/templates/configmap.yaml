@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-config
+  namespace: my-app
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>{{ .Values.configMap.title }}</title>
+    </head>
+    <body>
+      <h1 style="color: blue; text-align: center;">{{ .Values.configMap.greeting }}</h1>
+      <p>{{ .Values.configMap.message }}</p>
+    </body>
+    </html>

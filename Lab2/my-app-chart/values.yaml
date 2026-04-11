@@ -1,0 +1,15 @@
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "1.27-alpine"
+
+configMap:
+  greeting: "До свидания, Татьяна Алексеевна!"
+  message: "Всё работает на Helm!"
+  title: "DevOps Lab2 Helm"
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30001
