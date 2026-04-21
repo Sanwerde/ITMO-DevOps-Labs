@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lab3 Project2</title>
+  
+  <style>
+    /* Центрируем всё на странице */
+    body {
+      text-align: center;        /* Текст по центру */
+      font-family: Calibri;        /* Простой шрифт */
+      padding-top: 100px;        /* Отступ сверху */
+    }
+    
+    /* Скрытый элемент (его не видно) */
+    .hidden {
+      display: none;
+    }
+    
+    /* Кнопки */
+    button {
+      padding: 10px 20px;        /* Размер кнопок */
+      margin: 10px;              /* Расстояние между кнопками */
+      font-size: 16px;           /* Размер текста */
+      cursor: pointer;           /* Курсор-рука при наведении */
+    }
+    
+    /* Зелёная кнопка "да" */
+    .yes {
+      background: green;
+      color: white;
+    }
+    
+    /* Красная кнопка "нет" */
+    .no {
+      background: red;
+      color: white;
+    }
+    
+    /* Синяя кнопка "назад" */
+    .back {
+      background: blue;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Вопрос -->
+  <h1>Хорошая лаба?</h1>
+  
+  <!-- Ответ (изначально скрыт) -->
+  <p id="answer" class="hidden"></p>
+  
+  <!-- Кнопки ДА и НЕТ -->
+  <div id="buttons">
+    <button class="yes" onclick="sayYes()">да</button>
+    <button class="no" onclick="sayNo()">нет</button>
+  </div>
+  
+  <!-- Кнопка НАЗАД (изначально скрыта) -->
+  <button id="backBtn" class="back hidden" onclick="goBack()">Вернуться назад</button>
+
+  <!-- СКРИПТЫ (что происходит при клике) -->
+  <script>
+    // Если нажали "да"
+    function sayYes() {
+      // 1. Скрываем кнопки
+      document.getElementById('buttons').className = 'hidden';
+      
+      // 2. Показываем ответ
+      document.getElementById('answer').innerText = 'Ура! Спасибо!';
+      document.getElementById('answer').className = '';
+    }
+    
+    // Если нажали "нет"
+    function sayNo() {
+      // 1. Скрываем кнопки
+      document.getElementById('buttons').className = 'hidden';
+      
+      // 2. Показываем ответ
+      document.getElementById('answer').innerText = 'Ошибка!';
+      document.getElementById('answer').className = '';
+      
+      // 3. Показываем кнопку "назад"
+      document.getElementById('backBtn').className = 'back';
+    }
+    
+    // Если нажали "вернуться назад"
+    function goBack() {
+      // 1. Скрываем ответ
+      document.getElementById('answer').className = 'hidden';
+      
+      // 2. Скрываем кнопку "назад"
+      document.getElementById('backBtn').className = 'back hidden';
+      
+      // 3. Показываем кнопки "да" и "нет"
+      document.getElementById('buttons').className = '';
+    }
+  </script>
+  <img src="/common/itmo.png" 
+     alt="itmo" 
+     style="position: fixed; bottom: 18px; right: 20px; width: 120px; height: auto; opacity: 0.8; z-index: 1000;">
+</body>
+</html>
