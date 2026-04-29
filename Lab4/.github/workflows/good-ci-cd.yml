@@ -1,0 +1,86 @@
+name: Good CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths-ignore: # Игнорируем изменения в документации и README
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+# Минимальные права для GITHUB_TOKEN (принцип наименьших привилегий)
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    # Таймаут на случай зависания
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Кэширование зависимостей
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }} # Конкретная версия, передаваемая через env
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter # Проверка синтаксических и стилистических ошибок
+        run: npm run lint
+
+      - name: Run unit tests # Проверка отдельными модулями
+        run: npm test
+
+      - name: Run security audit # Проверка безопасности в соответсивии требованиям и стандартам
+        run: npm audit
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Только если был пуш в мейн
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx # Docker Build с поддержкой кэша
+        uses: docker/setup-buildx-action@v2
+
+      # Безопасная авторизация в Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with: # Секреты с GitHub Secrets
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+              tags: |
+		${{ secrets.DOCKER_USERNAME }}/my-app:latest
+		${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }}

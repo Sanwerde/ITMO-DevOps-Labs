@@ -1,0 +1,40 @@
+name: Bad CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    			# Отсутствует игнор и нет условий для pull_request
+  pull_request: 
+    branches: [ main ]
+
+env: # Хранение секрета в виде обычной переменной
+  DOCKER_USERNAME: dockerhub_username 
+  DOCKER_PASSWORD: dockerhub_password 
+
+jobs:
+  build-and-deploy: # Две джобы в одной
+    runs-on: ubuntu-latest # Нет конкретной версии
+    steps:
+      # Нет проверки лишних файлов, используется checkout по умолчанию
+      - uses: actions/checkout@v2 # Старая версия
+
+      # Установка зависимостей без кэширования
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nodejs npm
+
+      # Небезопасное использование секрета в команде shell (уязвимость к инъекции)
+      - name: Run tests with secret
+        run: |
+          echo "Running tests with secret: ${{ env.DOCKER_PASSWORD }}"
+          npm test -- --api-key=${{ env.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t my-app .
+
+      - name: Log in to Docker Hub
+        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push my-app

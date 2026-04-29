@@ -1,0 +1,37 @@
+name: Vault-Integrated CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-with-vault:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Интеграция с Vault
+      - name: Import secrets from HashiCorp Vault
+        uses: hashicorp/vault-action@v2.8.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            secret/ci/docker username | DOCKER_USERNAME ;
+            secret/ci/docker password | DOCKER_PASSWORD
+
+      #- name: Build application
+        #run: 
+
+      #- name: Run tests
+        #run: 
+       
+      #- name: Deploy application
+        #run: 
